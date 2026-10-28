@@ -1,6 +1,6 @@
 # Notes for Claude Code
 
-- Owner is a business analyst, beginner at coding. Explain what each script does in plain English before running it.
+- Owner is a business analyst. Explain what each script does in plain English before running it.
 - Use Python 3.13 (`py -3.13`). Windows machine, PowerShell.
 - Prefer pandas + sqlite3 (standard library). Keep scripts short and commented.
 - Never edit files in `02_data/raw/`. Write cleaned outputs to `02_data/clean/`.
