@@ -83,5 +83,5 @@ Contains public sector information licensed under the [Open Government Licence v
 This is an independent portfolio analysis of published statistics. It is not an official PHS publication or a statement of compliance with the national standard.
 
 ## About
-Kumar Lakshya, MBA (University of Glasgow, Adam Smith Business School), with a background in strategy, data analysis and project engineering.
+Kumar Lakshya, MBA (University of Glasgow, Adam Smith Business School), with a background in strategy, business analysis and project engineering.
 LinkedIn: https://www.linkedin.com/in/kumarlakshya9600
