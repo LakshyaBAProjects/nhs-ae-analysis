@@ -18,6 +18,16 @@ A business analysis built the way a BA engagement runs: problem statement, stake
 
 Full write-up with recommendations: [`05_findings/recommendation_memo.md`](05_findings/recommendation_memo.md)
 
+### Phase 2: do delayed discharges explain it?
+I added Public Health Scotland delayed-discharge data (patients ready to leave hospital but still in a bed) to test whether blocked beds explain the A&E waits. Write-up: [`05_findings/phase2_delayed_discharge_findings.md`](05_findings/phase2_delayed_discharge_findings.md)
+
+| Finding | Evidence |
+|---|---|
+| Blocked beds are up about a third | Average daily delayed beds: about **1,455 (2019) to 1,958** (latest 12 months) |
+| It is structural, not seasonal | National level only moves from about 1,835 (Apr to Jun) to about 1,960 (Nov) |
+| It does not explain the gap between boards | Lanarkshire has the **lowest** delayed-bed rate yet 52.0% within 4 hours. Western Isles has the highest yet 91.9% |
+| Reasons are shifting | Delays for adults with incapacity (Code 9 AWI) **doubled**: 73,609 to 147,828 bed days |
+
 ## Dashboard
 Built in Power BI. Download the [PDF version](04_dashboard/ae_dashboard.pdf) or open the [.pbix](04_dashboard/ae_dashboard.pbix).
 
@@ -25,10 +35,13 @@ Built in Power BI. Download the [PDF version](04_dashboard/ae_dashboard.pdf) or 
 ![Overview page](04_dashboard/page1_overview.jpg)
 
 **2. Boards and sites:** board ranking, ten sites with the longest waits, and each board's fall since 2019.
-![Boards and sites page](04_dashboard/page2_boards_sites.jpg)
+![Boards and sites page](04_dashboard/page2_board_sites.jpg)
 
 **3. Demand vs flow:** attendances against 4-hour performance for every site, and the seasonal pattern.
 ![Demand vs flow page](04_dashboard/page3_demand_flow.jpg)
+
+**4. Capacity and discharge (Phase 2):** delayed beds over time, delayed beds against A&E performance by board, and the reasons patients are delayed.
+![Capacity and discharge page](04_dashboard/page4_capacity_discharge.jpg)
 
 ## Approach
 1. **Business analysis** ([`01_business/`](01_business)): problem statement, stakeholder map, requirements document (BRD) with MoSCoW priorities, and 8 user stories with acceptance criteria.
@@ -36,6 +49,7 @@ Built in Power BI. Download the [PDF version](04_dashboard/ae_dashboard.pdf) or 
 3. **SQL analysis** ([`03_sql/`](03_sql)): one query per user story. Each file names the story it answers.
 4. **Dashboard** ([`04_dashboard/`](04_dashboard)): three pages built for an operations manager.
 5. **Recommendation memo** ([`05_findings/`](05_findings)): finding, so what, recommendation, indicative impact, limitations.
+6. **Phase 2: delayed discharge** ([`clean_delayed_discharge.py`](clean_delayed_discharge.py), user stories US-09 to US-12): linked delayed-discharge data to the A&E data by board and month, tested whether blocked beds explain the waits, added dashboard page 4.
 
 ## Judgement calls and data traps
 - **Double counting.** The data has Unplanned, New planned and All rows. All is the sum of the other two, so adding them would count patients twice. Only "All" is used.
@@ -45,6 +59,8 @@ Built in Power BI. Download the [PDF version](04_dashboard/ae_dashboard.pdf) or 
 - **Children's hospitals are flagged.** They are not directly comparable with general Emergency Departments.
 - **Definition change.** Planned attendances joined the 4-hour standard in February 2025, so the trend charts mark that date.
 - **Unnamed sites.** 15 site codes have no name in the PHS hospital list (likely closed or renamed). They are labelled "Unknown site" and reported, not dropped.
+- **Delayed-discharge double counting.** The delay files split every board by age group and by reason, and include "All" rows plus a Scotland total. Only the 18+ group, "All Delay Reasons" and the 14 boards are used, so nothing is counted twice.
+- **Fair comparison across boards.** Delayed bed days are scaled per 1,000 Type 1 attendances, because raw counts make large boards look worst. With only 14 boards, correlations are indicative, not conclusive.
 - **Covid distortion.** The 2020 peak reflects low attendances during lockdown, not better flow. The seasonality chart starts at 2022 for this reason.
 - **Truncated axis disclosed.** The seasonality chart's axis starts at 50% to make a 6-point gap visible, and says so.
 
@@ -52,7 +68,7 @@ Built in Power BI. Download the [PDF version](04_dashboard/ae_dashboard.pdf) or 
 Python (pandas), SQLite, SQL, Power BI (DAX measures), Git and GitHub. Claude Code was used for coding help; the analysis design, business documents and conclusions are my own.
 
 ## What I'd do next
-- **Test the "flow, not demand" hypothesis** with bed occupancy, delayed discharge and staffing data by site. This analysis shows where and when, not why.
+- **Add the next explanatory layer.** Delayed discharge does not explain the gap between boards, so the next step is total hospital beds, occupancy and staffing by board and site.
 - **Peer review.** Compare patient-flow practice at Ninewells with Forth Valley Royal and Wishaw.
 - **Automate the refresh.** A scheduled script to pull each new month's PHS release and update the dashboard.
 - **Add a winter forecast** so boards can plan staffing before October.
@@ -64,21 +80,24 @@ Python (pandas), SQLite, SQL, Power BI (DAX measures), Git and GitHub. Claude Co
 ├── 01_business/     problem statement, stakeholder map, BRD, user stories
 ├── 02_data/
 │   ├── raw/         original PHS files (unchanged)
-│   └── clean/       ae_clean.csv and ae.db (SQLite)
+│   └── clean/       ae_clean.csv, delayed-discharge CSVs and ae.db (SQLite)
 ├── 03_sql/          one query per user story
 ├── 04_dashboard/    Power BI file, PDF and page screenshots
-├── 05_findings/     recommendation memo
-└── clean_data.py    data preparation script
+├── 05_findings/     recommendation memo and Phase 2 findings
+├── clean_data.py                 A&E data preparation
+└── clean_delayed_discharge.py    Phase 2: delayed discharge and linking
 ```
 
 ## Reproduce it
 1. Install Python 3.13 and pandas: `py -3.13 -m pip install pandas`
 2. From the project folder: `py -3.13 clean_data.py`
 3. This writes `02_data/clean/ae_clean.csv` and the `ae_monthly` table in `02_data/clean/ae.db`.
-4. Run the queries in `03_sql/` in any SQLite tool. Open `04_dashboard/ae_dashboard.pbix` in Power BI Desktop (it reads `ae_clean.csv`; refresh the data source path if needed).
+4. For Phase 2, also run `py -3.13 clean_delayed_discharge.py`. It adds the `dd_monthly`, `dd_reasons` and `board_month_flow` tables to `ae.db` and writes matching CSVs.
+5. Run the queries in `03_sql/` in any SQLite tool.
+6. Open `04_dashboard/ae_dashboard.pbix` in Power BI Desktop (it reads `ae_clean.csv`, `board_month_flow.csv` and `dd_reasons.csv`; refresh the data source paths if needed).
 
 ## Data source and licence
-Public Health Scotland, [Monthly A&E Activity and Waiting Times](https://www.opendata.nhs.scot/dataset/monthly-accident-and-emergency-activity-and-waiting-times) and the hospital and health board lookups from the same open data portal.
+Public Health Scotland, [Monthly A&E Activity and Waiting Times](https://www.opendata.nhs.scot/dataset/monthly-accident-and-emergency-activity-and-waiting-times) the hospital and health board lookups, and [Delayed Discharges in NHSScotland](https://www.opendata.nhs.scot/dataset/delayed-discharges-in-nhsscotland), all from the same open data portal.
 Contains public sector information licensed under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
 This is an independent portfolio analysis of published statistics. It is not an official PHS publication or a statement of compliance with the national standard.
 

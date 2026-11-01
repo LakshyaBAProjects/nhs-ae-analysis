@@ -12,8 +12,9 @@ SELECT
     CASE
       WHEN TRIM(HospitalName) IN (
         'Royal Hospital for Children',
-        'Royal Hospital for Children and Young People'
-      ) OR TreatmentLocation = 'S319H' THEN 1
+        'Royal Hospital for Children and Young People',
+        'Royal Aberdeen Children''s Hospital'
+      ) OR TreatmentLocation IN ('S319H', 'N121H') THEN 1
       ELSE 0
     END AS IsPaediatric,
     SUM(NumberOfAttendancesEpisode) AS Attendances,

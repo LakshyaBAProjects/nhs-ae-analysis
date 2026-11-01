@@ -4,8 +4,8 @@
 |---|---|
 | Project | Scottish A&E Waiting Times Analysis |
 | Author | Kumar Lakshya |
-| Version | 0.2 (draft) |
-| Date | 25 October 2026 |
+| Version | 0.3 (draft) |
+| Date | 1 November 2026 |
 
 ## 1. Objective
 Give health board operations managers a clear, comparable view of A&E waiting-time performance, so they can target improvement where it matters most.
@@ -19,10 +19,11 @@ Public Health Scotland publishes monthly A&E activity and waiting-time data for 
 - Monthly data from 2019 to the latest month (earlier years used only for context)
 - KPIs: % within 4 hours, % over 8 hours, % over 12 hours, attendances
 - SQL analysis, Power BI dashboard (3 pages), one-page recommendation memo
+- Phase 2: PHS delayed-discharge data (bed days and monthly census, adults 18+, by health board) linked to the A&E data; Power BI page 4
 
 **Out of scope:**
 - Minor injury units and other Type 3 services (no 8/12-hour data)
-- Patient-level data, staffing, bed capacity, clinical outcomes
+- Patient-level data, staffing, total bed capacity, clinical outcomes (delayed-discharge beds are in scope from Phase 2; total beds and staffing are not yet)
 - Forecasting and real-time monitoring
 - Official performance reporting (PHS publishes that)
 
@@ -39,6 +40,9 @@ Public Health Scotland publishes monthly A&E activity and waiting-time data for 
 | BR-08 | Show which sites are excluded or unnamed in the rankings | Should |
 | BR-09 | Export a one-page summary | Could |
 | BR-10 | Real-time data | Won't (source data is monthly) |
+| BR-11 | Show the monthly trend in delayed-discharge bed days and delayed beds (Phase 2) | Should |
+| BR-12 | Compare each board's delayed-discharge pressure with its A&E performance, now and against 2019 (Phase 2) | Should |
+| BR-13 | Show the reasons for delayed discharge, 2019 versus latest 12 months (Phase 2) | Could |
 
 ## 5. KPIs
 | KPI | Definition |
@@ -56,6 +60,8 @@ Percentages are calculated from summed counts, never by averaging site percentag
 - Rankings exclude sites with fewer than 500 attendances in the period, because small numbers swing percentages.
 - 15 site codes in the A&E data have no name in the PHS hospital list (likely closed or renamed). They are shown as "Unknown site (code)" and are not dropped.
 - Planned attendances were added to the 4-hour standard in February 2025, so trends crossing that date are not perfectly like-for-like.
+- Delayed-discharge data (Phase 2) covers adults aged 18+. Only the "18plus" age group and the "All Delay Reasons" rows are used, and the Scotland total is excluded, so nothing is double counted.
+- Delayed bed days are compared per 1,000 Type 1 A&E attendances so large and small boards can be compared. Population-based rates are not used yet.
 - Results describe patterns in published data. They are not an official compliance statement.
 
 ## 7. Risks
