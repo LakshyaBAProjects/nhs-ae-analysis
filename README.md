@@ -65,7 +65,7 @@ Built in Power BI. Download the [PDF version](04_dashboard/ae_dashboard.pdf) or 
 - **Truncated axis disclosed.** The seasonality chart's axis starts at 50% to make a 6-point gap visible, and says so.
 
 ## Tools
-Python (pandas), SQLite, SQL, Power BI (DAX measures), Git and GitHub. Claude Code was used for coding help; the analysis design, business documents and conclusions are my own.
+Python (pandas), SQLite, SQL, Power BI (DAX measures), Git and GitHub. I used Claude to help draft the documents, SQL, Python and DAX. I defined the question, chose the scope, checked outputs against the source data and made the judgement calls.
 
 ## What I'd do next
 - **Add the next explanatory layer.** Delayed discharge does not explain the gap between boards, so the next step is total hospital beds, occupancy and staffing by board and site.
